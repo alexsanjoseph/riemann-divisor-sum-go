@@ -8,14 +8,20 @@ import (
 
 var _ = Describe("Divisor", func() {
 
-	Context("Good Cases", func() {
+	Describe("Good Cases", func() {
 		It("Should give correct result", func() {
-			output, _ := riemann.DivisorSum(72)
+			output, err := riemann.DivisorSum(72)
+			if err != nil {
+				Fail("error should be nil")
+			}
 			Expect(output).To(Equal(195))
 		})
 
 		It("Should give correct result", func() {
-			output, _ := riemann.DivisorSum(1)
+			output, err := riemann.DivisorSum(1)
+			if err != nil {
+				Fail("error should be nil")
+			}
 			Expect(output).To(Equal(1))
 		})
 	})
