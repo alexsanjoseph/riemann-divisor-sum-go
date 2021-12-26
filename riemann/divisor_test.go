@@ -1,17 +1,10 @@
 package riemann_test
 
 import (
-	"testing"
-
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
-
-func TestDivisor(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Divisor")
-}
 
 var _ = Describe("Divisor", func() {
 
