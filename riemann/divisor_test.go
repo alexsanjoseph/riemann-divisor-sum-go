@@ -39,4 +39,23 @@ var _ = Describe("Divisor", func() {
 			Expect(err).To(HaveOccurred())
 		})
 	})
+
+	Context("Parametrized Cases", func() {
+		divisorSums := []int{
+			1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42, 32,
+			36, 24, 60, 31, 42, 40, 56, 30, 72, 32, 63, 48, 54, 48, 91, 38, 60, 56, 90, 42,
+			96, 44, 84, 78, 72, 48, 124, 57, 93, 72,
+		}
+
+		for i, sum := range divisorSums {
+			It("Should Pass for all cases", func() {
+				output, err := riemann.DivisorSum(i + 1)
+				if err != nil {
+					Fail("error should be nil")
+				}
+				Expect(output).To(Equal(sum))
+			})
+		}
+
+	})
 })
