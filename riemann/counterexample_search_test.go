@@ -31,9 +31,9 @@ var _ = Describe("CounterExample Search", func() {
 	})
 
 	It("should find best witness successfully", func() {
-		output, witnessVal := riemann.BestWitness(10000, 5041)
+		output, witnessVal := riemann.BestWitness(100000, 5041)
 		fmt.Println("Current Best", output, "at value", witnessVal)
 
-		Expect(output).To(Equal(7560))
+		Expect(output).To(Equal(10080))
 	})
 })
