@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/dustin/go-humanize"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -31,8 +32,9 @@ var _ = Describe("CounterExample Search", func() {
 	})
 
 	It("should find best witness successfully", func() {
-		output, witnessVal := riemann.BestWitness(100000, 5041)
-		fmt.Println("Current Best", output, "at value", witnessVal)
+		count_till := 1000000
+		output, witnessVal := riemann.BestWitness(count_till, 5041)
+		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
 
 		Expect(output).To(Equal(10080))
 	})
