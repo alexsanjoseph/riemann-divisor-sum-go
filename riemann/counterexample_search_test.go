@@ -14,8 +14,13 @@ import (
 var _ = Describe("CounterExample Search", func() {
 
 	It("should return witness value", func() {
-		output := riemann.WitnessValue(10080)
+		output := riemann.WitnessValue(10080, -1)
 		Expect(math.Abs(output-1.755814) < 1e-5).To(BeTrue())
+	})
+
+	It("should return witness value if precomputed sum is provided", func() {
+		output := riemann.WitnessValue(10080, 1)
+		Expect(math.Abs(output-(1/22389.61097)) < 1e-5).To(BeTrue())
 	})
 
 	It("should fail if no witnesses", func() {
