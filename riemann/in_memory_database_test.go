@@ -89,6 +89,25 @@ var _ = Describe("In Memory Database Tests", func() {
 			}
 			Expect(summaryData).To(Equal(expectedSummaryData))
 		})
+
+	})
+
+	FIt("Summarizes for float values", func() {
+		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+
+		By("correctly summarizing non-empty data", func() {
+			records := []riemann.RiemannDivisorSum{
+				{N: 10092, DivisorSum: 24388, WitnessValue: 1.088},
+				{N: 10080, DivisorSum: 39000, WitnessValue: 1.788},
+			}
+			db.Upsert(records)
+			summaryData := db.Summarize()
+			expectedSummaryData := riemann.SummaryStats{
+				LargestWitnessValue: riemann.RiemannDivisorSum{N: 10080, DivisorSum: 39000, WitnessValue: 1.788},
+				LargestComputedN:    riemann.RiemannDivisorSum{N: 10092, DivisorSum: 24388, WitnessValue: 1.088},
+			}
+			Expect(summaryData).To(Equal(expectedSummaryData))
+		})
 	})
 
 })

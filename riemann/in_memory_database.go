@@ -32,7 +32,7 @@ func (imdb InMemoryDivisorDb) Summarize() SummaryStats {
 		if rds.N > largest_computed_n.N {
 			largest_computed_n = rds
 		}
-		if int(rds.WitnessValue) > int(largest_witness_value.WitnessValue) {
+		if rds.WitnessValue > largest_witness_value.WitnessValue {
 			largest_witness_value = rds
 		}
 	}
