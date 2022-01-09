@@ -42,3 +42,17 @@ func BestWitness(maxRange, searchStart int) (int, float64) {
 	}
 	return bestWitness, maxVal
 }
+
+func ComputerRiemannDivisorSums(startingN, endingN int) []RiemannDivisorSum {
+	output := []RiemannDivisorSum{}
+
+	for i := startingN; i <= endingN; i++ {
+		ds, err := DivisorSum(i)
+		if err != nil {
+			panic("Divisor Sum cannot be found")
+		}
+		wv := WitnessValue(i, ds)
+		output = append(output, RiemannDivisorSum{N: i, WitnessValue: wv, DivisorSum: ds})
+	}
+	return output
+}
