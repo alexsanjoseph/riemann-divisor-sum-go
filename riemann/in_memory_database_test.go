@@ -92,7 +92,7 @@ var _ = Describe("In Memory Database Tests", func() {
 
 	})
 
-	FIt("Summarizes for float values", func() {
+	It("Summarizes for float values", func() {
 		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
 
 		By("correctly summarizing non-empty data", func() {
