@@ -32,7 +32,7 @@ var _ = Describe("CounterExample Search", func() {
 	})
 
 	It("should find best witness successfully", func() {
-		count_till := 1000000
+		count_till := 100000
 		output, witnessVal := riemann.BestWitness(count_till, 5041)
 		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
 
