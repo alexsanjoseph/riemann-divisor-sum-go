@@ -43,4 +43,20 @@ var _ = Describe("CounterExample Search", func() {
 
 		Expect(output).To(Equal(10080))
 	})
+
+	It("Should compute riemann sums correctly", func() {
+		expectedOutput := []riemann.RiemannDivisorSum{
+			{N: 10080, DivisorSum: 39312, WitnessValue: 1.75581},
+			{N: 10081, DivisorSum: 10692, WitnessValue: 0.47749},
+			{N: 10082, DivisorSum: 15339, WitnessValue: 0.68495},
+		}
+		actualOutput := riemann.ComputerRiemannDivisorSums(10080, 10082)
+		Expect(len(actualOutput)).To(Equal(len(expectedOutput)))
+		for key, value := range actualOutput {
+			Expect(value.DivisorSum).To(Equal(expectedOutput[key].DivisorSum))
+			Expect(value.N).To(Equal(expectedOutput[key].N))
+			Expect(math.Abs(value.WitnessValue-expectedOutput[key].WitnessValue) < 1e-5).To(BeTrue())
+		}
+
+	})
 })
