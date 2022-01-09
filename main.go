@@ -23,7 +23,7 @@ func handleClose(db riemann.DivisorDb) {
 func main() {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
-	var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int]riemann.RiemannDivisorSum)})
+	var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
 	go riemann.PopulateDB(db, 1000000)
 
 	<-sigCh

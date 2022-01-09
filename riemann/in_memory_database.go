@@ -1,7 +1,7 @@
 package riemann
 
 type InMemoryDivisorDb struct {
-	Data map[int]RiemannDivisorSum
+	Data map[int64]RiemannDivisorSum
 }
 
 func (imdb InMemoryDivisorDb) Load() []RiemannDivisorSum {
