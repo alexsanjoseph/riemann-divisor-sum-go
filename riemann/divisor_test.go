@@ -40,7 +40,7 @@ var _ = Describe("Divisor", func() {
 		})
 	})
 
-	Context("Parametrized Cases", func() {
+	It("Should work on parametrized cases", func() {
 		divisorSums := []int{
 			1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42, 32,
 			36, 24, 60, 31, 42, 40, 56, 30, 72, 32, 63, 48, 54, 48, 91, 38, 60, 56, 90, 42,
@@ -48,7 +48,7 @@ var _ = Describe("Divisor", func() {
 		}
 
 		for i, sum := range divisorSums {
-			It("Should Pass for all cases", func() {
+			By("Passing each cases", func() {
 				output, err := riemann.DivisorSum(i + 1)
 				if err != nil {
 					Fail("error should be nil")
