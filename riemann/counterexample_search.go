@@ -5,9 +5,9 @@ import (
 	"math"
 )
 
-func WitnessValue(n int, pds int) float64 {
+func WitnessValue(n int64, pds int64) float64 {
 	denom := float64(n) * math.Log(math.Log(float64(n)))
-	var divSum int
+	var divSum int64
 	var err error
 	if pds < 0 {
 		divSum, err = DivisorSum(n)
@@ -21,7 +21,7 @@ func WitnessValue(n int, pds int) float64 {
 	return float64(divSum) / float64(denom)
 }
 
-func Search(maxRange, searchStart int) (int, error) {
+func Search(maxRange, searchStart int64) (int64, error) {
 	for i := searchStart; i < maxRange; i++ {
 		if WitnessValue(i, -1) > 1.782 {
 			return i, nil
@@ -30,7 +30,7 @@ func Search(maxRange, searchStart int) (int, error) {
 	return 0, errors.New("no witness value found")
 }
 
-func BestWitness(maxRange, searchStart int) (int, float64) {
+func BestWitness(maxRange, searchStart int64) (int64, float64) {
 	maxVal := 0.0
 	bestWitness := searchStart
 	for i := searchStart; i < maxRange; i++ {
@@ -43,7 +43,7 @@ func BestWitness(maxRange, searchStart int) (int, float64) {
 	return bestWitness, maxVal
 }
 
-func ComputerRiemannDivisorSums(startingN, endingN int) []RiemannDivisorSum {
+func ComputerRiemannDivisorSums(startingN, endingN int64) []RiemannDivisorSum {
 	output := []RiemannDivisorSum{}
 
 	for i := startingN; i <= endingN; i++ {

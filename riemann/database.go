@@ -1,8 +1,8 @@
 package riemann
 
 type RiemannDivisorSum struct {
-	N            int
-	DivisorSum   int
+	N            int64
+	DivisorSum   int64
 	WitnessValue float64
 }
 

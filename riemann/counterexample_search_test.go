@@ -33,15 +33,15 @@ var _ = Describe("CounterExample Search", func() {
 		if err != nil {
 			Fail("error should be nil")
 		}
-		Expect(output).To(Equal(5040))
+		Expect(output).To(Equal(int64(5040)))
 	})
 
 	It("should find best witness successfully", func() {
-		count_till := 100000
+		count_till := int64(100000)
 		output, witnessVal := riemann.BestWitness(count_till, 5041)
 		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
 
-		Expect(output).To(Equal(10080))
+		Expect(output).To(Equal(int64(10080)))
 	})
 
 	It("Should compute riemann sums correctly", func() {

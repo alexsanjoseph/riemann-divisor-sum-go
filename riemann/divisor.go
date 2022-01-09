@@ -5,15 +5,15 @@ import (
 	"math"
 )
 
-func DivisorSum(n int) (int, error) {
+func DivisorSum(n int64) (int64, error) {
 	if n <= 0 {
 		return 0, errors.New("value cannot be less than or equal to zero")
 	}
 
 	limit := math.Sqrt(float64(n))
-	sum := 0
+	sum := int64(0)
 
-	for i := 1; float64(i) <= limit; i++ {
+	for i := int64(1); float64(i) <= limit; i++ {
 		if n%i == 0 {
 			sum += i
 			if float64(i) != limit {

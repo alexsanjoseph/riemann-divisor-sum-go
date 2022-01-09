@@ -2,8 +2,8 @@ package riemann
 
 import "fmt"
 
-func PopulateDB(db DivisorDb, batchSize int) {
-	var startingN int
+func PopulateDB(db DivisorDb, batchSize int64) {
+	var startingN int64
 	dbStartingN := db.Summarize().LargestComputedN.N
 	if dbStartingN < 5040 {
 		startingN = 5041
