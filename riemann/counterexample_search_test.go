@@ -28,6 +28,10 @@ var _ = Describe("CounterExample Search", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
+	It("should panic if asked to find witnesses for cases where DivisorSum cannot be found", func() {
+		Expect(func() { riemann.WitnessValue(-1, -1) }).To(PanicWith("Error calculating DivisorSum"))
+	})
+
 	It("should search successfully", func() {
 		output, err := riemann.Search(10000, 5040)
 		if err != nil {
@@ -57,6 +61,11 @@ var _ = Describe("CounterExample Search", func() {
 			Expect(value.N).To(Equal(expectedOutput[key].N))
 			Expect(math.Abs(value.WitnessValue-expectedOutput[key].WitnessValue) < 1e-5).To(BeTrue())
 		}
+
+	})
+
+	It("Should panic if it can't compute riemann sums", func() {
+		Expect(func() { riemann.ComputerRiemannDivisorSums(0, 1) }).Should(PanicWith("Divisor Sum cannot be found"))
 
 	})
 })
