@@ -29,7 +29,7 @@ var _ = Describe("CounterExample Search", func() {
 	})
 
 	It("should panic if asked to find witnesses for cases where DivisorSum cannot be found", func() {
-		Expect(func() { riemann.WitnessValue(-1, -1) }).To(PanicWith("Error calculating DivisorSum"))
+		Expect(func() { riemann.WitnessValue(-1, -1) }).To(PanicWith("Error calculating DivisorSum for -1"))
 	})
 
 	It("should search successfully", func() {
@@ -41,11 +41,12 @@ var _ = Describe("CounterExample Search", func() {
 	})
 
 	It("should find best witness successfully", func() {
-		count_till := int64(100000)
-		output, witnessVal := riemann.BestWitness(count_till, 5041)
+		count_till := int64(100_000)
+
+		output, witnessVal := riemann.BestWitness(count_till, 11000)
 		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
 
-		Expect(output).To(Equal(int64(10080)))
+		Expect(output).To(Equal(int64(55440)))
 	})
 
 	It("Should compute riemann sums correctly", func() {

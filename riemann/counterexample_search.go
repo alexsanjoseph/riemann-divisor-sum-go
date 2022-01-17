@@ -2,6 +2,7 @@ package riemann
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -15,7 +16,7 @@ func WitnessValue(n int64, pds int64) float64 {
 		divSum, err = pds, nil
 	}
 	if err != nil {
-		panic("Error calculating DivisorSum")
+		panic(fmt.Sprintf("Error calculating DivisorSum for %d", n))
 	}
 
 	return float64(divSum) / float64(denom)
