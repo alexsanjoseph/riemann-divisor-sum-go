@@ -40,8 +40,8 @@ var _ = Describe("CounterExample Search", func() {
 		Expect(output).To(Equal(int64(5040)))
 	})
 
-	It("should find best witness successfully", func() {
-		count_till := int64(100_000)
+	FIt("should find best witness successfully", func() {
+		count_till := int64(20_000_000)
 
 		output, witnessVal := riemann.BestWitness(count_till, 11000)
 		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
