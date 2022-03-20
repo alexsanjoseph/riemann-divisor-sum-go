@@ -16,9 +16,11 @@ type SqliteDivisorDb struct {
 func (sqdb *SqliteDivisorDb) Initialize() {
 
 	db, err := sql.Open("sqlite3", sqdb.DBPath)
+	sqdb.db = db
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+
 	sqlStmt := `
 	CREATE TABLE RiemannDivisorSums (
             n UNSIGNED BIG INT CONSTRAINT divisor_sum_pk PRIMARY KEY,
@@ -26,11 +28,11 @@ func (sqdb *SqliteDivisorDb) Initialize() {
             witness_value REAL
 	);
 	`
-	_, err = db.Exec(sqlStmt)
-	if err != nil {
+	_, err = sqdb.db.Exec(sqlStmt)
+
+	if err != nil && err.Error() != "table RiemannDivisorSums already exists" {
 		panic(err)
 	}
-	sqdb.db = db
 }
 
 func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
@@ -140,4 +142,12 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 		LargestComputedN:    largest_computed_n,
 	}
 
+}
+
+func (sqdb *SqliteDivisorDb) Close() {
+	err := sqdb.db.Close()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("DB Closed!")
 }

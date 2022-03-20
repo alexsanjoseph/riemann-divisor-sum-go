@@ -1,6 +1,7 @@
 package riemann_test
 
 import (
+	"os"
 	"sort"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
@@ -8,19 +9,18 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const DBPath = ":memory:"
-
-// const DBPath = "test.sqlite"
-
-// var _ = AfterEach(func() {
-// 	os.Remove(DBPath)
-// })
+const DBPath = "test.sqlite"
 
 func beforeEachFunc(inputDb riemann.DivisorDb) riemann.DivisorDb {
+	os.Remove(DBPath)
 	db := riemann.DivisorDb(inputDb)
 	db.Initialize()
 	return db
 }
+
+var _ = AfterEach(func() {
+	os.Remove(DBPath)
+})
 
 var _ = Describe("Parametrized Database Tests", func() {
 
@@ -29,6 +29,16 @@ var _ = Describe("Parametrized Database Tests", func() {
 		loadedData := db.Load()
 		Expect(len(loadedData)).To(Equal(0))
 
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
+
+	DescribeTable("Multiple initializations should be Idempotent", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
+		db.Initialize()
+		db.Initialize()
+		Expect(true)
 	},
 		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
