@@ -7,22 +7,21 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Populates Database correctly", func() {
+var _ = Describe("Parametrized Population tests", func() {
 
-	var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
-	db.Initialize()
-	It("Populates and Summarizes correctly", func() {
-
+	DescribeTable("Populates, Summarizes and finds StartingN correctly", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
 		riemann.PopulateDB(db, 10070, 10085, 21)
 		summaryData := db.Summarize()
+
 		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(10080))
 		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(10091))
-	})
-
-	It("Finds startingN correctly", func() {
 
 		startingN := riemann.FindStartingNForDB(db, 10075)
 		Expect(startingN).To(BeEquivalentTo(10092))
 
-	})
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
 })

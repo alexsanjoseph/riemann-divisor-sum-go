@@ -13,7 +13,7 @@ type SqliteDivisorDb struct {
 	db     *sql.DB
 }
 
-func (sqdb SqliteDivisorDb) Initialize() {
+func (sqdb *SqliteDivisorDb) Initialize() {
 
 	db, err := sql.Open("sqlite3", sqdb.DBPath)
 	if err != nil {
@@ -30,20 +30,10 @@ func (sqdb SqliteDivisorDb) Initialize() {
 	if err != nil {
 		panic(err)
 	}
-	db.Close()
-}
-
-func (sqdb *SqliteDivisorDb) ensureInit() {
-	db, err := sql.Open("sqlite3", sqdb.DBPath)
-	if err != nil {
-		log.Fatal(err)
-	}
 	sqdb.db = db
 }
 
 func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
-	sqdb.ensureInit()
-	defer sqdb.db.Close()
 	sqlStmt := `
             SELECT n, divisor_sum, witness_value
             FROM RiemannDivisorSums
@@ -72,8 +62,6 @@ func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
 }
 
 func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
-	sqdb.ensureInit()
-	defer sqdb.db.Close()
 
 	tx, err := sqdb.db.Begin()
 	if err != nil {
@@ -103,12 +91,9 @@ func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
 		}
 	}
 	tx.Commit()
-	sqdb.db.Close()
 }
 
 func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
-	sqdb.ensureInit()
-	defer sqdb.db.Close()
 
 	largestNStms := `
 	SELECT *

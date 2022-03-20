@@ -1,7 +1,6 @@
 package riemann_test
 
 import (
-	"os"
 	"sort"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
@@ -9,28 +8,34 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const DBPath = "test.sqlite"
+const DBPath = ":memory:"
 
-var _ = BeforeEach(func() {
-	os.Remove(DBPath)
-	var db = riemann.DivisorDb(&riemann.SqliteDivisorDb{DBPath: DBPath})
+// const DBPath = "test.sqlite"
+
+// var _ = AfterEach(func() {
+// 	os.Remove(DBPath)
+// })
+
+func beforeEachFunc(inputDb riemann.DivisorDb) riemann.DivisorDb {
+	db := riemann.DivisorDb(inputDb)
 	db.Initialize()
-})
+	return db
+}
 
-var _ = AfterEach(func() {
-	os.Remove(DBPath)
-})
+var _ = Describe("Parametrized Database Tests", func() {
 
-var _ = Describe("Sqlite Database Tests", func() {
-
-	It("is initially empty", func() {
-		var db = riemann.DivisorDb(&riemann.SqliteDivisorDb{DBPath: DBPath})
+	DescribeTable("is initially empty", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
 		loadedData := db.Load()
 		Expect(len(loadedData)).To(Equal(0))
-	})
 
-	It("Upserts correctly", func() {
-		var db = riemann.DivisorDb(&riemann.SqliteDivisorDb{DBPath: DBPath})
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
+
+	DescribeTable("Upserts correctly", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
 		records := []riemann.RiemannDivisorSum{
 			{N: 1, DivisorSum: 1, WitnessValue: 1},
 			{N: 2, DivisorSum: 2, WitnessValue: 2},
@@ -76,10 +81,13 @@ var _ = Describe("Sqlite Database Tests", func() {
 			Expect(loadedData).To(Equal(append(records, expectedNewRecords...)))
 		})
 
-	})
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
 
-	It("Summarizes", func() {
-		var db = riemann.DivisorDb(&riemann.SqliteDivisorDb{DBPath: DBPath})
+	DescribeTable("Summarizes", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
 		By("correctly summarizing empty data", func() {
 			summaryData := db.Summarize()
 			expectedSummaryData := riemann.SummaryStats{
@@ -104,10 +112,13 @@ var _ = Describe("Sqlite Database Tests", func() {
 			Expect(summaryData).To(Equal(expectedSummaryData))
 		})
 
-	})
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
 
-	It("Summarizes for float values", func() {
-		var db = riemann.DivisorDb(&riemann.SqliteDivisorDb{DBPath: DBPath})
+	DescribeTable("Summarizes for float values", func(inputDb riemann.DivisorDb) {
+		db := beforeEachFunc(inputDb)
 		By("correctly summarizing non-empty data", func() {
 			records := []riemann.RiemannDivisorSum{
 				{N: 10092, DivisorSum: 24388, WitnessValue: 1.088},
@@ -121,6 +132,9 @@ var _ = Describe("Sqlite Database Tests", func() {
 			}
 			Expect(summaryData).To(Equal(expectedSummaryData))
 		})
-	})
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+	)
 
 })
