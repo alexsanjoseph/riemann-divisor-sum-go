@@ -11,13 +11,16 @@ import (
 var _ = Describe("In Memory Database Tests", func() {
 
 	It("is initially empty", func() {
-		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+		var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
+		db.Initialize()
+
 		loadedData := db.Load()
 		Expect(len(loadedData)).To(Equal(0))
 	})
 
 	It("Upserts correctly", func() {
-		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+		var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
+		db.Initialize()
 		records := []riemann.RiemannDivisorSum{
 			{N: 1, DivisorSum: 1, WitnessValue: 1},
 			{N: 2, DivisorSum: 2, WitnessValue: 2},
@@ -65,7 +68,8 @@ var _ = Describe("In Memory Database Tests", func() {
 	})
 
 	It("Summarizes", func() {
-		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+		var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
+		db.Initialize()
 		By("correctly summarizing empty data", func() {
 			summaryData := db.Summarize()
 			expectedSummaryData := riemann.SummaryStats{
@@ -93,7 +97,8 @@ var _ = Describe("In Memory Database Tests", func() {
 	})
 
 	It("Summarizes for float values", func() {
-		var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+		var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
+		db.Initialize()
 
 		By("correctly summarizing non-empty data", func() {
 			records := []riemann.RiemannDivisorSum{

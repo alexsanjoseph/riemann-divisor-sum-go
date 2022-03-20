@@ -12,6 +12,7 @@ type SummaryStats struct {
 }
 
 type DivisorDb interface {
+	Initialize()
 	Load() []RiemannDivisorSum
 	Upsert([]RiemannDivisorSum)
 	Summarize() SummaryStats

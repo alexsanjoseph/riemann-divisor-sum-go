@@ -9,7 +9,8 @@ import (
 
 var _ = Describe("Populates Database correctly", func() {
 
-	var db = riemann.DivisorDb(riemann.InMemoryDivisorDb{Data: make(map[int64]riemann.RiemannDivisorSum)})
+	var db = riemann.DivisorDb(&riemann.InMemoryDivisorDb{})
+	db.Initialize()
 	It("Populates and Summarizes correctly", func() {
 
 		riemann.PopulateDB(db, 10070, 10085, 21)
