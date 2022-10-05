@@ -1,8 +1,6 @@
 package riemann_test
 
 import (
-	"fmt"
-
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -11,7 +9,7 @@ import (
 func GeneratePartitionTests(i int, expectedPartitions [][]int) {
 	Describe("Finds partition for an integer", func() {
 		It("", func() {
-			output := riemann.PartitionsOfN(i + 1)
+			output := riemann.MemoizedPartitionsOfN(i + 1)
 			Expect(output).To(Equal(expectedPartitions))
 		})
 	})
@@ -20,7 +18,7 @@ func GeneratePartitionTests(i int, expectedPartitions [][]int) {
 func GeneratePartitionCountTests(i int, expectedPartitionCount int) {
 	Describe("Finds partition count for an integer", func() {
 		It("", func() {
-			output := riemann.PartitionsOfN(i + 1)
+			output := riemann.MemoizedPartitionsOfN(i + 1)
 			Expect(len(output)).To(Equal(expectedPartitionCount))
 		})
 	})
@@ -56,8 +54,7 @@ var _ = Describe("For partition counts", func() {
 		GeneratePartitionTests(i, expectedPartitions[i])
 	}
 
-	for i := 0; i < 20; i++ {
-		fmt.Println(expectedPartitionsCounts[i])
+	for i := 0; i < len(expectedPartitionsCounts); i++ {
 		GeneratePartitionCountTests(i, expectedPartitionsCounts[i])
 	}
 
