@@ -9,5 +9,5 @@ import (
 
 func TestDivisor(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Divisor")
+	RunSpecs(t, "Suite Tests")
 }
