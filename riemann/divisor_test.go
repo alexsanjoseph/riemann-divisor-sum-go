@@ -166,7 +166,7 @@ var _ = Describe("Divisor Calculation", func() {
 					return resultA == resultB
 
 				},
-				gen.SliceOf(gen.IntRange(2, 20).SuchThat(func(v interface{}) bool { // Have to constrain because it doesn't work for large numbers yet
+				gen.SliceOf(gen.IntRange(2, 15).SuchThat(func(v interface{}) bool { // Have to constrain because it doesn't work for large numbers yet
 					return riemann.CheckIfPrime(v.(int))
 				}),
 					reflect.TypeOf(int(0))).SuchThat(func(v interface{}) bool {
