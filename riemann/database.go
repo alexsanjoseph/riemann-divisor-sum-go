@@ -16,4 +16,5 @@ type DivisorDb interface {
 	Load() []RiemannDivisorSum
 	Upsert([]RiemannDivisorSum)
 	Summarize() SummaryStats
+	Close()
 }

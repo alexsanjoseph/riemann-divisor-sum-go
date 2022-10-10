@@ -1,5 +1,7 @@
 package riemann
 
+import "fmt"
+
 type InMemoryDivisorDb struct {
 	data map[int64]RiemannDivisorSum
 }
@@ -45,4 +47,8 @@ func (imdb InMemoryDivisorDb) Summarize() SummaryStats {
 		LargestComputedN:    largest_computed_n,
 	}
 
+}
+
+func (imdb *InMemoryDivisorDb) Close() {
+	fmt.Println("Inmemory Divisor DB Closed!")
 }

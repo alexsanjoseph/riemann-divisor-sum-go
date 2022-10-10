@@ -9,19 +9,21 @@ import (
 
 var _ = Describe("Parametrized Population tests", func() {
 
-	DescribeTable("Populates, Summarizes and finds StartingN correctly", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
-		riemann.PopulateDB(db, 10070, 10085, 21)
+	DescribeTable("Populates, Summarizes and finds StartingN correctly", func(inputDb riemann.DivisorDb, searchDb riemann.SearchStateDB) {
+		db := setupDivisorDB(inputDb)
+		sdb := setupSearchStateDB(searchDb)
+
+		riemann.PopulateDB(db, sdb, 90, 1)
 		summaryData := db.Summarize()
 
 		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(10080))
-		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(10091))
+		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(10090))
 
-		startingN := riemann.FindStartingNForDB(db, 10075)
-		Expect(startingN).To(BeEquivalentTo(10092))
+		nextBatch := sdb.LatestSearchState("exhaustive").GetNextBatch(100)
+		Expect(nextBatch[0].Value()).To(BeEquivalentTo(10091))
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		// Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}, &riemann.InMemorySearchDb{}),
 	)
 })

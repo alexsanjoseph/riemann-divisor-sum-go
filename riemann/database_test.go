@@ -9,43 +9,52 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const DBPath = "test.sqlite"
+const DivisorDBPath = "testDivisorDB.sqlite"
+const SearchDBPath = "testSearchDB.sqlite"
 
-func beforeEachFunc(inputDb riemann.DivisorDb) riemann.DivisorDb {
-	os.Remove(DBPath)
+func setupDivisorDB(inputDb riemann.DivisorDb) riemann.DivisorDb {
+	os.Remove(DivisorDBPath)
 	db := riemann.DivisorDb(inputDb)
 	db.Initialize()
 	return db
 }
 
+func setupSearchStateDB(inputDb riemann.SearchStateDB) riemann.SearchStateDB {
+	os.Remove(SearchDBPath)
+	db := riemann.SearchStateDB(inputDb)
+	db.Initialize()
+	return db
+}
+
 var _ = AfterEach(func() {
-	os.Remove(DBPath)
+	os.Remove(DivisorDBPath)
+	os.Remove(SearchDBPath)
 })
 
 var _ = Describe("Parametrized Database Tests", func() {
 
 	DescribeTable("is initially empty", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
+		db := setupDivisorDB(inputDb)
 		loadedData := db.Load()
 		Expect(len(loadedData)).To(Equal(0))
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
 	)
 
 	DescribeTable("Multiple initializations should be Idempotent", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
+		db := setupDivisorDB(inputDb)
 		db.Initialize()
 		db.Initialize()
 		Expect(true)
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
 	)
 
 	DescribeTable("Upserts correctly", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
+		db := setupDivisorDB(inputDb)
 		records := []riemann.RiemannDivisorSum{
 			{N: 1, DivisorSum: 1, WitnessValue: 1},
 			{N: 2, DivisorSum: 2, WitnessValue: 2},
@@ -92,12 +101,12 @@ var _ = Describe("Parametrized Database Tests", func() {
 		})
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
 	)
 
 	DescribeTable("Summarizes", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
+		db := setupDivisorDB(inputDb)
 		By("correctly summarizing empty data", func() {
 			summaryData := db.Summarize()
 			expectedSummaryData := riemann.SummaryStats{
@@ -123,12 +132,12 @@ var _ = Describe("Parametrized Database Tests", func() {
 		})
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
 	)
 
 	DescribeTable("Summarizes for float values", func(inputDb riemann.DivisorDb) {
-		db := beforeEachFunc(inputDb)
+		db := setupDivisorDB(inputDb)
 		By("correctly summarizing non-empty data", func() {
 			records := []riemann.RiemannDivisorSum{
 				{N: 10092, DivisorSum: 24388, WitnessValue: 1.088},
@@ -143,7 +152,7 @@ var _ = Describe("Parametrized Database Tests", func() {
 			Expect(summaryData).To(Equal(expectedSummaryData))
 		})
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
 	)
 

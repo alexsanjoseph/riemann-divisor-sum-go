@@ -55,7 +55,11 @@ var _ = Describe("CounterExample Search", func() {
 			{N: 10081, DivisorSum: 10692, WitnessValue: 0.47749},
 			{N: 10082, DivisorSum: 15339, WitnessValue: 0.68495},
 		}
-		actualOutput := riemann.ComputerRiemannDivisorSums(10080, 10082)
+		actualOutput := []riemann.RiemannDivisorSum{
+			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10080))),
+			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10081))),
+			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10082))),
+		}
 		Expect(len(actualOutput)).To(Equal(len(expectedOutput)))
 		for key, value := range actualOutput {
 			Expect(value.DivisorSum).To(Equal(expectedOutput[key].DivisorSum))
@@ -65,8 +69,8 @@ var _ = Describe("CounterExample Search", func() {
 
 	})
 
-	It("Should panic if it can't compute riemann sums", func() {
-		Expect(func() { riemann.ComputerRiemannDivisorSums(0, 1) }).Should(PanicWith("Divisor Sum cannot be found"))
+	// It("Should panic if it can't compute riemann sums", func() {
+	// 	Expect(func() { riemann.ComputerRiemannDivisorSums(0, 1) }).Should(PanicWith("Divisor Sum cannot be found"))
 
-	})
+	// })
 })

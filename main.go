@@ -21,14 +21,24 @@ func handleClose(db riemann.DivisorDb) {
 }
 
 func main() {
+
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
-	sqlDB := riemann.SqliteDivisorDb{DBPath: "db.sqlite"}
-	var db = riemann.DivisorDb(&sqlDB)
-	db.Initialize()
-	defer sqlDB.Close()
 
-	go riemann.PopulateDB(db, 10081, -1, 1000000)
+	// sqlDB := riemann.SqliteDivisorDb{DBPath: "db.sqlite"}
+	// var db = riemann.DivisorDb(&sqlDB)
+
+	imDB := riemann.InMemoryDivisorDb{}
+	var ddb = riemann.DivisorDb(&imDB)
+	ddb.Initialize()
+	defer ddb.Close()
+
+	imsdb := riemann.InMemorySearchDb{}
+	ssdb := riemann.SearchStateDB(&imsdb)
+	ssdb.Initialize()
+	defer ssdb.Close()
+
+	go riemann.PopulateDB(ddb, ssdb, 1000000, -1)
 	<-sigCh
-	handleClose(db)
+	handleClose(ddb)
 }

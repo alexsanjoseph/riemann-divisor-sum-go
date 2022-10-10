@@ -3,34 +3,39 @@ package riemann
 import (
 	"fmt"
 	"time"
-
-	"github.com/dustin/go-humanize"
 )
 
-func FindStartingNForDB(db DivisorDb, startingN int64) int64 {
-	var currentStartingN int64
+func PopulateDB(db DivisorDb, sdb SearchStateDB, batchSize int64, batches int64) {
+	stateType := "exhaustive" //hardcoded for now
 
-	dbStartingN := db.Summarize().LargestComputedN.N
+	latestSearchState := sdb.LatestSearchState(stateType)
+	nextBatch := latestSearchState.GetNextBatch(batchSize)
 
-	if dbStartingN > startingN {
-		currentStartingN = dbStartingN + 1
-	} else {
-		currentStartingN = startingN
-	}
-	return currentStartingN
-}
+	for i := 0; batches == -1 || i < int(batches); i++ {
+		startTime := time.Now()
+		candidateResults := []RiemannDivisorSum{}
 
-func PopulateDB(db DivisorDb, startingN, endingN, batchSize int64) {
-	currentStartingN := FindStartingNForDB(db, startingN)
-	currentEndingN := currentStartingN + batchSize
+		for _, candidate := range nextBatch {
+			candidateResult := ComputeRiemannDivisorSum(candidate)
+			candidateResults = append(candidateResults, candidateResult)
+		}
+		db.Upsert(candidateResults)
 
-	for endingN == -1 || currentEndingN < endingN+batchSize {
-		start := time.Now()
-		db.Upsert(ComputerRiemannDivisorSums(currentStartingN, currentEndingN))
-		currentStartingN = currentEndingN + 1
-		currentEndingN = currentStartingN + batchSize - 1
-		elapsed := time.Since(start)
+		endTime := time.Now()
+		endingState := nextBatch[len(nextBatch)-1]
+
+		elapsed := time.Since(startTime)
 		fmt.Printf("Computed Sums from %s to %s in %s \n",
-			humanize.Comma(currentStartingN), humanize.Comma(currentEndingN), elapsed)
+			nextBatch[0].Serialize(), endingState.Serialize(), elapsed)
+
+		singleBatchMetadata := SearchMetadata{
+			startTime:     startTime,
+			endTime:       endTime,
+			stateType:     stateType,
+			startingState: nextBatch[0],
+			endingState:   endingState,
+		}
+		sdb.InsertSearchMetadata(singleBatchMetadata)
+		nextBatch = endingState.GetNextBatch(batchSize)
 	}
 }
