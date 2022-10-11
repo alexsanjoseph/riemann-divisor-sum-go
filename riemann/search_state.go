@@ -22,3 +22,13 @@ type SearchStateDB interface {
 	InsertSearchMetadata(SearchMetadata)
 	Close()
 }
+
+func DefaultSearchMetadata() SearchMetadata {
+	return SearchMetadata{
+		startTime:     time.Now(),
+		endTime:       time.Now(),
+		stateType:     "exhaustive", // Need to genericise this later
+		startingState: SearchState(NewExhaustiveSearchState(1)),
+		endingState:   SearchState(NewExhaustiveSearchState(10000)),
+	}
+}

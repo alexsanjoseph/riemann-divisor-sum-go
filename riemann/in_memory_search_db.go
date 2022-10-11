@@ -2,7 +2,6 @@ package riemann
 
 import (
 	"fmt"
-	"time"
 )
 
 type InMemorySearchDb struct {
@@ -10,13 +9,7 @@ type InMemorySearchDb struct {
 }
 
 func (imsdb *InMemorySearchDb) Initialize() {
-	imsdb.data = []SearchMetadata{SearchMetadata{
-		startTime:     time.Now(),
-		endTime:       time.Now(),
-		stateType:     "exhaustive",
-		startingState: NewExhaustiveSearchState(1),
-		endingState:   NewExhaustiveSearchState(10000),
-	}}
+	imsdb.data = []SearchMetadata{DefaultSearchMetadata()}
 }
 
 func (imsdb *InMemorySearchDb) LatestSearchState(searchType string) SearchState {

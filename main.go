@@ -25,16 +25,21 @@ func main() {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
 
-	// sqlDB := riemann.SqliteDivisorDb{DBPath: "db.sqlite"}
-	// var db = riemann.DivisorDb(&sqlDB)
+	sqlDB := riemann.SqliteDivisorDb{DBPath: "divisorDb.sqlite"}
+	var ddb = riemann.DivisorDb(&sqlDB)
 
-	imDB := riemann.InMemoryDivisorDb{}
-	var ddb = riemann.DivisorDb(&imDB)
+	// imDB := riemann.InMemoryDivisorDb{}
+	// var ddb = riemann.DivisorDb(&imDB)
+
 	ddb.Initialize()
 	defer ddb.Close()
 
-	imsdb := riemann.InMemorySearchDb{}
-	ssdb := riemann.SearchStateDB(&imsdb)
+	sqlsdb := riemann.SqliteSearchDb{DBPath: "searchDb.sqlite"}
+	ssdb := riemann.SearchStateDB(&sqlsdb)
+
+	// imsdb := riemann.InMemorySearchDb{}
+	// ssdb := riemann.SearchStateDB(&imsdb)
+
 	ssdb.Initialize()
 	defer ssdb.Close()
 

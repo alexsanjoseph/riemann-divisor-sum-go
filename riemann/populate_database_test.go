@@ -23,7 +23,7 @@ var _ = Describe("Parametrized Population tests", func() {
 		Expect(nextBatch[0].Value()).To(BeEquivalentTo(10091))
 
 	},
-		// Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}, &riemann.SqliteSearchDb{DBPath: SearchDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}, &riemann.InMemorySearchDb{}),
 	)
 })
