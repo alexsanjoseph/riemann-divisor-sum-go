@@ -39,8 +39,6 @@ func (ssdb *SqliteSearchDb) Initialize() {
 		}
 		panic(err)
 	}
-
-	ssdb.InsertSearchMetadata(DefaultSearchMetadata())
 }
 
 func (ssdb *SqliteSearchDb) LatestSearchState(searchType string) SearchState {

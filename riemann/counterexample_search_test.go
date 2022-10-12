@@ -55,10 +55,11 @@ var _ = Describe("CounterExample Search", func() {
 			{N: 10081, DivisorSum: 10692, WitnessValue: 0.47749},
 			{N: 10082, DivisorSum: 15339, WitnessValue: 0.68495},
 		}
+
 		actualOutput := []riemann.RiemannDivisorSum{
-			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10080))),
-			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10081))),
-			riemann.ComputeRiemannDivisorSum(riemann.SearchState(riemann.NewExhaustiveSearchState(10082))),
+			riemann.NewExhaustiveSearchState(10080).ComputeRiemannDivisorSum(),
+			riemann.NewExhaustiveSearchState(10081).ComputeRiemannDivisorSum(),
+			riemann.NewExhaustiveSearchState(10082).ComputeRiemannDivisorSum(),
 		}
 		Expect(len(actualOutput)).To(Equal(len(expectedOutput)))
 		for key, value := range actualOutput {

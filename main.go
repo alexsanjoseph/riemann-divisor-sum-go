@@ -22,28 +22,29 @@ func handleClose(db riemann.DivisorDb) {
 
 func main() {
 
+	searchType := "superabundant"
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
 
-	sqlDB := riemann.SqliteDivisorDb{DBPath: "divisorDb.sqlite"}
-	var ddb = riemann.DivisorDb(&sqlDB)
+	// sqlDB := riemann.SqliteDivisorDb{DBPath: "divisorDb.sqlite"}
+	// var ddb = riemann.DivisorDb(&sqlDB)
 
-	// imDB := riemann.InMemoryDivisorDb{}
-	// var ddb = riemann.DivisorDb(&imDB)
+	imDB := riemann.InMemoryDivisorDb{}
+	var ddb = riemann.DivisorDb(&imDB)
 
 	ddb.Initialize()
 	defer ddb.Close()
 
-	sqlsdb := riemann.SqliteSearchDb{DBPath: "searchDb.sqlite"}
-	ssdb := riemann.SearchStateDB(&sqlsdb)
+	// sqlsdb := riemann.SqliteSearchDb{DBPath: "searchDb.sqlite"}
+	// ssdb := riemann.SearchStateDB(&sqlsdb)
 
-	// imsdb := riemann.InMemorySearchDb{}
-	// ssdb := riemann.SearchStateDB(&imsdb)
+	imsdb := riemann.InMemorySearchDb{}
+	ssdb := riemann.SearchStateDB(&imsdb)
 
 	ssdb.Initialize()
 	defer ssdb.Close()
 
-	go riemann.PopulateDB(ddb, ssdb, 1000000, -1)
+	go riemann.PopulateDB(ddb, ssdb, searchType, 1000, -1)
 	<-sigCh
 	handleClose(ddb)
 }

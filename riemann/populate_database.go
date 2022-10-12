@@ -5,8 +5,7 @@ import (
 	"time"
 )
 
-func PopulateDB(db DivisorDb, sdb SearchStateDB, batchSize int64, batches int64) {
-	stateType := "exhaustive" //hardcoded for now
+func PopulateDB(db DivisorDb, sdb SearchStateDB, stateType string, batchSize int64, batches int64) {
 
 	latestSearchState := sdb.LatestSearchState(stateType)
 	nextBatch := latestSearchState.GetNextBatch(batchSize)
@@ -16,7 +15,7 @@ func PopulateDB(db DivisorDb, sdb SearchStateDB, batchSize int64, batches int64)
 		candidateResults := []RiemannDivisorSum{}
 
 		for _, candidate := range nextBatch {
-			candidateResult := ComputeRiemannDivisorSum(candidate)
+			candidateResult := candidate.ComputeRiemannDivisorSum()
 			candidateResults = append(candidateResults, candidateResult)
 		}
 		db.Upsert(candidateResults)
