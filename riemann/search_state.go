@@ -23,3 +23,11 @@ type SearchStateDB interface {
 	InsertSearchMetadata(SearchMetadata)
 	Close()
 }
+
+func (smm *SearchMetadata) Initialize(stateType string, startingState, endingState SearchState) {
+	smm.startTime = time.Now()
+	smm.endTime = time.Now()
+	smm.stateType = stateType
+	smm.startingState = startingState
+	smm.endingState = endingState
+}

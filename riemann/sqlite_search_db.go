@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -41,25 +40,31 @@ func (ssdb *SqliteSearchDb) Initialize() {
 	}
 }
 
-func (ssdb *SqliteSearchDb) LatestSearchState(searchType string) SearchState {
+func (ssdb *SqliteSearchDb) LatestSearchState(stateType string) SearchState {
 	sqlStmt := `
             SELECT ending_state
             FROM SearchState
+			WHERE state_type=?
             ORDER BY end_time DESC, id DESC
 			LIMIT 1;
 			`
-	row := ssdb.db.QueryRow(sqlStmt)
-	var endingState string
-	err := row.Scan(&endingState)
+	row := ssdb.db.QueryRow(sqlStmt, stateType)
+	var endingStateString string
+	err := row.Scan(&endingStateString)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return InitialSearchState(stateType)
+		}
+		log.Fatal(err)
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	endingStateInt, err := strconv.Atoi(endingState)
-	if err != nil {
-		panic("unable to convert ending state")
-	}
-	return NewExhaustiveSearchState(int64(endingStateInt)) // We're assuming exhaustive search here, which we'll fix soon
+	endingState := NewSearchState(endingStateString, stateType)
+	return endingState // We're assuming exhaustive search here, which we'll fix soon
 }
 
 func (ssdb *SqliteSearchDb) InsertSearchMetadata(smd SearchMetadata) {

@@ -1,11 +1,18 @@
 package riemann_test
 
 import (
+	"os"
+
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
+
+var _ = AfterEach(func() {
+	os.Remove(SearchDBPath)
+	os.Remove(DivisorDBPath)
+})
 
 var _ = Describe("Parametrized Population tests", func() {
 
@@ -23,7 +30,7 @@ var _ = Describe("Parametrized Population tests", func() {
 		Expect(nextBatch[0].Value()).To(BeEquivalentTo("10091"))
 
 	},
-		// Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}, &riemann.SqliteSearchDb{DBPath: SearchDBPath}),
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}, &riemann.SqliteSearchDb{DBPath: SearchDBPath}),
 		Entry("In-Memory", &riemann.InMemoryDivisorDb{}, &riemann.InMemorySearchDb{}),
 	)
 })

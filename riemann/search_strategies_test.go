@@ -59,4 +59,11 @@ var _ = Describe("Search Strategies", func() {
 		})
 	})
 
+	DescribeTable("Creates New Search State of both types", func(serializedState, stateType string, expectedOutput riemann.SearchState) {
+		Expect(riemann.NewSearchState(serializedState, stateType)).To(Equal(expectedOutput))
+	},
+		Entry("Superabundant", "18, 161", "superabundant", riemann.SearchState(riemann.NewSuperAbundantSearchState(18, 161, []int{-1}))),
+		Entry("Exhaustive", "10000", "exhaustive", riemann.SearchState(riemann.NewExhaustiveSearchState(10000))),
+	)
+
 })

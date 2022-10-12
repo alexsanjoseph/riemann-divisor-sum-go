@@ -10,7 +10,6 @@ import (
 )
 
 const DivisorDBPath = "testDivisorDB.sqlite"
-const SearchDBPath = "testSearchDB.sqlite"
 
 func setupDivisorDB(inputDb riemann.DivisorDb) riemann.DivisorDb {
 	os.Remove(DivisorDBPath)
@@ -19,16 +18,8 @@ func setupDivisorDB(inputDb riemann.DivisorDb) riemann.DivisorDb {
 	return db
 }
 
-func setupSearchStateDB(inputDb riemann.SearchStateDB) riemann.SearchStateDB {
-	os.Remove(SearchDBPath)
-	db := riemann.SearchStateDB(inputDb)
-	db.Initialize()
-	return db
-}
-
 var _ = AfterEach(func() {
 	os.Remove(DivisorDBPath)
-	os.Remove(SearchDBPath)
 })
 
 var _ = Describe("Parametrized Database Tests", func() {

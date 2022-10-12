@@ -4,7 +4,46 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"strconv"
+	"strings"
 )
+
+func InitialSearchState(stateType string) SearchState {
+	if stateType == "exhaustive" {
+		latestSearchState := SearchState(NewExhaustiveSearchState(10000))
+		return latestSearchState
+	}
+	if stateType == "superabundant" {
+		latestSearchState := SearchState(NewSuperAbundantSearchState(14, 0, []int{1}))
+		return latestSearchState
+	}
+	panic("unknown stateType")
+}
+
+func NewSearchState(serializedState, stateType string) SearchState {
+	if stateType == "exhaustive" {
+		nInt, err := strconv.Atoi(serializedState)
+		if err != nil {
+			panic("unable to convert")
+		}
+		searchState := SearchState(NewExhaustiveSearchState(int64(nInt)))
+		return searchState
+	}
+	if stateType == "superabundant" {
+		splitString := strings.Split(serializedState, ", ")
+		level, err := strconv.Atoi(splitString[0])
+		if err != nil {
+			panic("unable to convert")
+		}
+		index, err := strconv.Atoi(splitString[1])
+		if err != nil {
+			panic("unable to convert")
+		}
+		searchState := SearchState(NewSuperAbundantSearchState(level, int64(index), []int{-1}))
+		return searchState
+	}
+	panic("unknown stateType")
+}
 
 //===================================================
 
