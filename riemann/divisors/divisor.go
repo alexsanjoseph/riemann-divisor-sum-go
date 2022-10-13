@@ -1,4 +1,4 @@
-package riemann
+package divisors
 
 import (
 	"errors"

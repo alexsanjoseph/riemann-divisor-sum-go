@@ -1,4 +1,4 @@
-package riemann
+package divisors
 
 func PartitionsOfN(n int) [][]int {
 	output := [][]int{{n}}

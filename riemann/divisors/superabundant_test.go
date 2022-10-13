@@ -1,9 +1,9 @@
-package riemann_test
+package divisors_test
 
 import (
 	"fmt"
 
-	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisors"
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 	"github.com/leanovate/gopter/prop"
@@ -14,7 +14,7 @@ import (
 func GeneratePartitionTests(i int, expectedPartitions [][]int) {
 	Describe("Finds partition for an integer", func() {
 		It("", func() {
-			output := riemann.MemoizedPartitionsOfN(i + 1)
+			output := divisors.MemoizedPartitionsOfN(i + 1)
 			Expect(output).To(Equal(expectedPartitions))
 		})
 	})
@@ -23,7 +23,7 @@ func GeneratePartitionTests(i int, expectedPartitions [][]int) {
 func GeneratePartitionCountTests(i int, expectedPartitionCount int) {
 	Describe("Finds partition count for an integer", func() {
 		It("", func() {
-			output := riemann.MemoizedPartitionsOfN(i + 1)
+			output := divisors.MemoizedPartitionsOfN(i + 1)
 			Expect(len(output)).To(Equal(expectedPartitionCount))
 		})
 	})
@@ -72,7 +72,7 @@ var _ = Describe("For partition counts", func() {
 
 		properties.Property("Check if all partitions add up to the sum correctly", prop.ForAll(
 			func(a int) bool {
-				partitions := riemann.MemoizedPartitionsOfN(a)
+				partitions := divisors.MemoizedPartitionsOfN(a)
 				for _, partition := range partitions {
 					sum := 0
 					for _, value := range partition {
@@ -89,7 +89,7 @@ var _ = Describe("For partition counts", func() {
 
 		properties.Property("Partitions values are non-increasing", prop.ForAll(
 			func(a int) bool {
-				partitions := riemann.MemoizedPartitionsOfN(a)
+				partitions := divisors.MemoizedPartitionsOfN(a)
 				for _, partition := range partitions {
 					for i := range partition {
 						if i == 0 {
@@ -109,7 +109,7 @@ var _ = Describe("For partition counts", func() {
 
 		properties.Property("Partitions are sorted", prop.ForAll(
 			func(a int) bool {
-				partitions := riemann.MemoizedPartitionsOfN(a)
+				partitions := divisors.MemoizedPartitionsOfN(a)
 
 				allValsArray := []string{}
 				for i, partition := range partitions {
@@ -133,7 +133,7 @@ var _ = Describe("For partition counts", func() {
 
 		properties.Property("Partitions are unique", prop.ForAll(
 			func(a int) bool {
-				partitions := riemann.MemoizedPartitionsOfN(a)
+				partitions := divisors.MemoizedPartitionsOfN(a)
 
 				allValsSet := make(map[string]struct{})
 				for _, partition := range partitions {

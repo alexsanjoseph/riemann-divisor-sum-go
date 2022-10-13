@@ -1,11 +1,11 @@
-package riemann_test
+package divisors_test
 
 import (
 	"math"
 	"math/big"
 	"reflect"
 
-	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisors"
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 	"github.com/leanovate/gopter/prop"
@@ -18,13 +18,13 @@ var _ = Describe("Divisor Calculation", func() {
 	Describe("Naive Divisor sum", func() {
 		Context("should work on good cases", func() {
 			It("Should give correct result", func() {
-				output, err := riemann.DivisorSum(72)
+				output, err := divisors.DivisorSum(72)
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(output).To(Equal(int64(195)))
 			})
 
 			It("Should give correct result", func() {
-				output, err := riemann.DivisorSum(1)
+				output, err := divisors.DivisorSum(1)
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(output).To(Equal(int64(1)))
 			})
@@ -32,13 +32,13 @@ var _ = Describe("Divisor Calculation", func() {
 
 		Context("should error out on bad cases", func() {
 			It("zero value", func() {
-				output, err := riemann.DivisorSum(0)
+				output, err := divisors.DivisorSum(0)
 				Expect(output).To(BeZero())
 				Expect(err).To(HaveOccurred())
 			})
 
 			It("negative value", func() {
-				output, err := riemann.DivisorSum(-5)
+				output, err := divisors.DivisorSum(-5)
 				Expect(output).To(BeZero())
 				Expect(err).To(HaveOccurred())
 			})
@@ -53,7 +53,7 @@ var _ = Describe("Divisor Calculation", func() {
 
 			for i, sum := range divisorSums {
 				By("Passing each cases", func() {
-					output, err := riemann.DivisorSum(int64(i) + 1)
+					output, err := divisors.DivisorSum(int64(i) + 1)
 					if err != nil {
 						Fail("error should be nil")
 					}
@@ -67,7 +67,7 @@ var _ = Describe("Divisor Calculation", func() {
 		Context("should work on good cases", func() {
 			It("For empty set", func() {
 				inputArray := [][]int64{}
-				output, err := riemann.PrimeFactorDivisorSum(inputArray)
+				output, err := divisors.PrimeFactorDivisorSum(inputArray)
 				if err != nil {
 					Fail("error should be nil")
 				}
@@ -76,7 +76,7 @@ var _ = Describe("Divisor Calculation", func() {
 
 			It("For prime number", func() {
 				inputArray := [][]int64{{7, 1}}
-				output, err := riemann.PrimeFactorDivisorSum(inputArray)
+				output, err := divisors.PrimeFactorDivisorSum(inputArray)
 				if err != nil {
 					Fail("error should be nil")
 				}
@@ -85,7 +85,7 @@ var _ = Describe("Divisor Calculation", func() {
 
 			It("For composite number", func() {
 				inputArray := [][]int64{{2, 3}, {3, 2}}
-				output, err := riemann.PrimeFactorDivisorSum(inputArray)
+				output, err := divisors.PrimeFactorDivisorSum(inputArray)
 				if err != nil {
 					Fail("error should be nil")
 				}
@@ -94,24 +94,24 @@ var _ = Describe("Divisor Calculation", func() {
 
 			It("For failing case", func() {
 				inputArray := [][]int64{{2, 3}}
-				output, err := riemann.PrimeFactorDivisorSum(inputArray)
+				output, err := divisors.PrimeFactorDivisorSum(inputArray)
 				if err != nil {
 					Fail("error should be nil")
 				}
-				output2, err := riemann.DivisorSumBig(*big.NewInt(8))
+				output2, err := divisors.DivisorSumBig(*big.NewInt(8))
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(output).To(Equal(output2))
 			})
 
 			It("It gives error for non prime base", func() {
 				inputArray := [][]int64{{2, 3}, {4, 2}}
-				_, err := riemann.PrimeFactorDivisorSum(inputArray)
+				_, err := divisors.PrimeFactorDivisorSum(inputArray)
 				Expect(err).To(HaveOccurred())
 			})
 
 			It("It gives error for non unique base", func() {
 				inputArray := [][]int64{{2, 3}, {2, 2}}
-				_, err := riemann.PrimeFactorDivisorSum(inputArray)
+				_, err := divisors.PrimeFactorDivisorSum(inputArray)
 				Expect(err).To(HaveOccurred())
 			})
 
@@ -123,7 +123,7 @@ var _ = Describe("Divisor Calculation", func() {
 					n *= int64(math.Pow(float64(x[0]), float64(x[1])))
 				}
 
-				_, err := riemann.PrimeFactorDivisorSum(inputArray)
+				_, err := divisors.PrimeFactorDivisorSum(inputArray)
 				Expect(err).ShouldNot(HaveOccurred())
 			})
 
@@ -135,7 +135,7 @@ var _ = Describe("Divisor Calculation", func() {
 					n *= int64(math.Pow(float64(x[0]), float64(x[1])))
 				}
 
-				_, err := riemann.PrimeFactorDivisorSum(inputArray)
+				_, err := divisors.PrimeFactorDivisorSum(inputArray)
 
 				Expect(err).ShouldNot(HaveOccurred())
 
@@ -145,13 +145,13 @@ var _ = Describe("Divisor Calculation", func() {
 		Describe("Big Divisor sum", func() {
 			Context("should work on good cases", func() {
 				It("Should give correct result", func() {
-					output, err := riemann.DivisorSumBig(*big.NewInt(72))
+					output, err := divisors.DivisorSumBig(*big.NewInt(72))
 					Expect(err).ShouldNot(HaveOccurred())
 					Expect(output).To(Equal(*big.NewInt(195)))
 				})
 
 				It("Should give correct result", func() {
-					output, err := riemann.DivisorSumBig(*big.NewInt(1))
+					output, err := divisors.DivisorSumBig(*big.NewInt(1))
 					Expect(err).ShouldNot(HaveOccurred())
 					Expect(output).To(Equal(*big.NewInt(1)))
 				})
@@ -159,13 +159,13 @@ var _ = Describe("Divisor Calculation", func() {
 
 			Context("should error out on bad cases", func() {
 				It("zero value", func() {
-					output, err := riemann.DivisorSumBig(*big.NewInt(0))
+					output, err := divisors.DivisorSumBig(*big.NewInt(0))
 					Expect(output).To(BeZero())
 					Expect(err).To(HaveOccurred())
 				})
 
 				It("negative value", func() {
-					output, err := riemann.DivisorSumBig(*big.NewInt(-5))
+					output, err := divisors.DivisorSumBig(*big.NewInt(-5))
 					Expect(output).To(BeZero())
 					Expect(err).To(HaveOccurred())
 				})
@@ -180,7 +180,7 @@ var _ = Describe("Divisor Calculation", func() {
 
 				for i, sum := range divisorSums {
 					By("Passing each cases", func() {
-						output, err := riemann.DivisorSumBig(*big.NewInt(int64(i) + 1))
+						output, err := divisors.DivisorSumBig(*big.NewInt(int64(i) + 1))
 						if err != nil {
 							Fail("error should be nil")
 						}
@@ -214,12 +214,12 @@ var _ = Describe("Divisor Calculation", func() {
 						n = *new(big.Int).Mul(expVal, &n)
 					}
 
-					resultA, err := riemann.PrimeFactorDivisorSum(input)
+					resultA, err := divisors.PrimeFactorDivisorSum(input)
 					if err != nil {
 						return false
 					}
 
-					resultB, err := riemann.DivisorSumBig(n)
+					resultB, err := divisors.DivisorSumBig(n)
 					if err != nil {
 						return false
 					}
@@ -228,10 +228,10 @@ var _ = Describe("Divisor Calculation", func() {
 
 				},
 				gen.SliceOf(gen.Int64Range(1, 30).SuchThat(func(v interface{}) bool {
-					return riemann.CheckIfPrime(v.(int64))
+					return divisors.CheckIfPrime(v.(int64))
 				}),
 					reflect.TypeOf(int64(0))).SuchThat(func(v interface{}) bool {
-					return riemann.CheckUniqueness(v.([]int64))
+					return divisors.CheckUniqueness(v.([]int64))
 				}).WithLabel("a"),
 				gen.SliceOf(gen.Int64Range(1, 5),
 					reflect.TypeOf(int64(0))).WithLabel("b"),

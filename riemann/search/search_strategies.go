@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisors"
 )
 
 func InitialSearchState(stateType string) SearchState {
@@ -78,7 +79,7 @@ func (ess *ExhaustiveSearchState) GetNextBatch(batchSize int64) []SearchState {
 
 func (ess *ExhaustiveSearchState) ComputeRiemannDivisorSum() riemann.RiemannDivisorSum {
 	i := ess.n
-	ds, err := riemann.DivisorSum(i)
+	ds, err := divisors.DivisorSum(i)
 	if err != nil {
 		panic("Divisor Sum cannot be found")
 	}
@@ -115,7 +116,7 @@ func (sass *SuperabundantSearchState) GetNextBatch(batchSize int64) []SearchStat
 	currentLevel := sass.level
 	currentIndexInLevel := sass.indexInLevel + 1
 	for len(output) <= int(batchSize) {
-		partitions := riemann.MemoizedPartitionsOfN(int(currentLevel))
+		partitions := divisors.MemoizedPartitionsOfN(int(currentLevel))
 
 		if currentIndexInLevel > int64(len(partitions)) {
 			panic("index level is illegal")
@@ -149,7 +150,7 @@ func (sass *SuperabundantSearchState) ComputeRiemannDivisorSum() riemann.Riemann
 		primeFactors = append(primeFactors, []int64{int64(primes[i]), int64(x)})
 	}
 
-	divSum, err := riemann.PrimeFactorDivisorSum(primeFactors)
+	divSum, err := divisors.PrimeFactorDivisorSum(primeFactors)
 	if err != nil {
 		panic("Divisor Sum cannot be found")
 	}
