@@ -1,8 +1,13 @@
 package riemann
 
+import (
+	"fmt"
+	"math/big"
+)
+
 type RiemannDivisorSum struct {
-	N            int64
-	DivisorSum   int64
+	N            big.Int
+	DivisorSum   big.Int
 	WitnessValue float64
 }
 
@@ -17,4 +22,11 @@ type DivisorDb interface {
 	Upsert([]RiemannDivisorSum)
 	Summarize() SummaryStats
 	Close()
+}
+
+func (rds *RiemannDivisorSum) Print() string {
+	return fmt.Sprintf(
+		"Number: %s, DivisorSum: %s, WitnessValue %f\n",
+		rds.N.String(), rds.DivisorSum.String(), rds.WitnessValue,
+	)
 }

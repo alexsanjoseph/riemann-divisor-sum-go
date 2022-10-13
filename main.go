@@ -14,9 +14,9 @@ func handleClose(db riemann.DivisorDb) {
 	summarizeOutput := db.Summarize()
 	fmt.Println("\nHighest Number Analyzed\n======")
 
-	fmt.Printf("%+v\n", summarizeOutput.LargestComputedN)
+	fmt.Print(summarizeOutput.LargestComputedN.Print())
 	fmt.Println("\nLargest Witness Value\n======")
-	fmt.Printf("%+v\n", summarizeOutput.LargestWitnessValue)
+	fmt.Print(summarizeOutput.LargestWitnessValue.Print())
 
 }
 

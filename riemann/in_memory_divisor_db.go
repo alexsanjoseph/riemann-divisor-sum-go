@@ -1,13 +1,16 @@
 package riemann
 
-import "fmt"
+import (
+	"fmt"
+	"math/big"
+)
 
 type InMemoryDivisorDb struct {
-	data map[int64]RiemannDivisorSum
+	data map[string]RiemannDivisorSum
 }
 
 func (imdb *InMemoryDivisorDb) Initialize() {
-	imdb.data = map[int64]RiemannDivisorSum{}
+	imdb.data = map[string]RiemannDivisorSum{}
 }
 
 func (imdb InMemoryDivisorDb) Load() []RiemannDivisorSum {
@@ -20,7 +23,7 @@ func (imdb InMemoryDivisorDb) Load() []RiemannDivisorSum {
 
 func (imdb InMemoryDivisorDb) Upsert(rds []RiemannDivisorSum) {
 	for _, value := range rds {
-		imdb.data[value.N] = value
+		imdb.data[value.N.String()] = value
 	}
 }
 
@@ -31,11 +34,11 @@ func (imdb InMemoryDivisorDb) Summarize() SummaryStats {
 			LargestComputedN:    RiemannDivisorSum{},
 		}
 	}
-	largest_computed_n := RiemannDivisorSum{N: -1}
+	largest_computed_n := RiemannDivisorSum{N: *big.NewInt(-1)}
 	largest_witness_value := RiemannDivisorSum{WitnessValue: -1}
 
 	for _, rds := range imdb.data {
-		if rds.N > largest_computed_n.N {
+		if rds.N.Cmp(&largest_computed_n.N) == 1 {
 			largest_computed_n = rds
 		}
 		if rds.WitnessValue > largest_witness_value.WitnessValue {

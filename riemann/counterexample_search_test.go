@@ -3,6 +3,7 @@ package riemann_test
 import (
 	"fmt"
 	"math"
+	"math/big"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 	"github.com/dustin/go-humanize"
@@ -51,9 +52,9 @@ var _ = Describe("CounterExample Search", func() {
 
 	It("Should compute riemann sums correctly", func() {
 		expectedOutput := []riemann.RiemannDivisorSum{
-			{N: 10080, DivisorSum: 39312, WitnessValue: 1.75581},
-			{N: 10081, DivisorSum: 10692, WitnessValue: 0.47749},
-			{N: 10082, DivisorSum: 15339, WitnessValue: 0.68495},
+			{N: *big.NewInt(10080), DivisorSum: *big.NewInt(39312), WitnessValue: 1.75581},
+			{N: *big.NewInt(10081), DivisorSum: *big.NewInt(10692), WitnessValue: 0.47749},
+			{N: *big.NewInt(10082), DivisorSum: *big.NewInt(15339), WitnessValue: 0.68495},
 		}
 
 		actualOutput := []riemann.RiemannDivisorSum{

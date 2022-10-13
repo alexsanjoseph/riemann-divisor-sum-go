@@ -81,7 +81,7 @@ func (ess *ExhaustiveSearchState) ComputeRiemannDivisorSum() RiemannDivisorSum {
 		panic("Divisor Sum cannot be found")
 	}
 	wv := WitnessValue(i, ds)
-	return RiemannDivisorSum{N: i, WitnessValue: wv, DivisorSum: ds}
+	return RiemannDivisorSum{N: *big.NewInt(i), WitnessValue: wv, DivisorSum: *big.NewInt(ds)}
 }
 
 //===================================================
@@ -160,8 +160,8 @@ func (sass *SuperabundantSearchState) ComputeRiemannDivisorSum() RiemannDivisorS
 	num, _ := new(big.Float).SetInt(&divSum).Float64()
 
 	wv := num / denom
-	fmt.Println("Level:", sass.level, ", Index:", sass.indexInLevel)
-	fmt.Println("N:", n, ", WV:", wv)
+	// fmt.Println("Level:", sass.level, ", Index:", sass.indexInLevel)
+	// fmt.Println("N:", n, ", WV:", wv)
 
-	return RiemannDivisorSum{N: n.Int64(), WitnessValue: wv, DivisorSum: divSum.Int64()} // TODO: hack!
+	return RiemannDivisorSum{N: n, WitnessValue: wv, DivisorSum: divSum} // TODO: hack!
 }

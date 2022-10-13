@@ -1,6 +1,7 @@
 package riemann_test
 
 import (
+	"math/big"
 	"os"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
@@ -23,8 +24,8 @@ var _ = Describe("Parametrized Population tests", func() {
 		riemann.PopulateDB(db, sdb, "exhaustive", 90, 1)
 		summaryData := db.Summarize()
 
-		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(10080))
-		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(10090))
+		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(*big.NewInt(10080)))
+		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(*big.NewInt(10090)))
 
 		nextBatch := sdb.LatestSearchState("exhaustive").GetNextBatch(100)
 		Expect(nextBatch[0].Value()).To(BeEquivalentTo("10091"))
