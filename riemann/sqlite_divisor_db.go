@@ -107,8 +107,8 @@ func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
 	defer sqlStmt.Close()
 	for _, value := range rds {
 		_, err := sqlStmt.Exec(
-			GetStableTextRepresentationOfBigInt(value.N, 100),
-			GetStableTextRepresentationOfBigInt(value.DivisorSum, 100),
+			GetStableTextRepresentationOfBigInt(value.N, 200),
+			GetStableTextRepresentationOfBigInt(value.DivisorSum, 200),
 			fmt.Sprintf("%f", value.WitnessValue),
 		)
 		if err != nil {

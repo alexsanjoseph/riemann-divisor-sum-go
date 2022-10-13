@@ -14,7 +14,7 @@ func InitialSearchState(stateType string) SearchState {
 		return latestSearchState
 	}
 	if stateType == "superabundant" {
-		latestSearchState := SearchState(NewSuperAbundantSearchState(14, 0, []int{1}))
+		latestSearchState := SearchState(NewSuperAbundantSearchState(9, 0, []int{1}))
 		return latestSearchState
 	}
 	panic("unknown stateType")
@@ -113,7 +113,7 @@ func (sass *SuperabundantSearchState) GetNextBatch(batchSize int64) []SearchStat
 	currentLevel := sass.level
 	currentIndexInLevel := sass.indexInLevel + 1
 	for len(output) <= int(batchSize) {
-		partitions := PartitionsOfN(int(currentLevel))
+		partitions := MemoizedPartitionsOfN(int(currentLevel))
 
 		if currentIndexInLevel > int64(len(partitions)) {
 			panic("index level is illegal")

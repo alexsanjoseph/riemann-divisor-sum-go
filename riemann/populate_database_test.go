@@ -21,7 +21,7 @@ var _ = Describe("Parametrized Population tests", func() {
 		db := setupDivisorDB(inputDb)
 		sdb := setupSearchStateDB(searchDb)
 
-		riemann.PopulateDB(db, sdb, "exhaustive", 90, 1)
+		riemann.PopulateDB(db, sdb, "exhaustive", 90, 1, 0)
 		summaryData := db.Summarize()
 
 		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(*big.NewInt(10080)))
@@ -29,6 +29,24 @@ var _ = Describe("Parametrized Population tests", func() {
 
 		nextBatch := sdb.LatestSearchState("exhaustive").GetNextBatch(100)
 		Expect(nextBatch[0].Value()).To(BeEquivalentTo("10091"))
+
+	},
+		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}, &riemann.SqliteSearchDb{DBPath: SearchDBPath}),
+		Entry("In-Memory", &riemann.InMemoryDivisorDb{}, &riemann.InMemorySearchDb{}),
+	)
+
+	DescribeTable("Populates, Summarizes correctly for superabundant search", func(inputDb riemann.DivisorDb, searchDb riemann.SearchStateDB) {
+		db := setupDivisorDB(inputDb)
+		sdb := setupSearchStateDB(searchDb)
+
+		riemann.PopulateDB(db, sdb, "superabundant", 90, 1, 0)
+		summaryData := db.Summarize()
+
+		Expect(summaryData.LargestWitnessValue.N).To(BeEquivalentTo(*big.NewInt(10080)))
+		Expect(summaryData.LargestComputedN.N).To(BeEquivalentTo(*big.NewInt(6469693230)))
+
+		nextBatch := sdb.LatestSearchState("superabundant").GetNextBatch(100)
+		Expect(nextBatch[0].Serialize()).To(BeEquivalentTo("11, 19"))
 
 	},
 		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}, &riemann.SqliteSearchDb{DBPath: SearchDBPath}),

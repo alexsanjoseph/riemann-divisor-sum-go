@@ -44,7 +44,7 @@ func main() {
 	ssdb.Initialize()
 	defer ssdb.Close()
 
-	go riemann.PopulateDB(ddb, ssdb, stateType, 1000, -1)
+	go riemann.PopulateDB(ddb, ssdb, stateType, 100000, -1, 1.75)
 	<-sigCh
 	handleClose(ddb)
 }
