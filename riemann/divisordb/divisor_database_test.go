@@ -1,23 +1,27 @@
-package riemann_test
+package divisordb_test
 
 import (
 	"math/big"
 	"os"
 	"sort"
+	"testing"
+	"time"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisordb"
 	. "github.com/onsi/ginkgo/v2"
+	"github.com/onsi/ginkgo/v2/types"
 	. "github.com/onsi/gomega"
 )
 
-const DivisorDBPath = "testDivisorDB.sqlite"
-
-func setupDivisorDB(inputDb riemann.DivisorDb) riemann.DivisorDb {
-	os.Remove(DivisorDBPath)
-	db := riemann.DivisorDb(inputDb)
-	db.Initialize()
-	return db
+func TestDivisor(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "DivisorDB Tests", types.ReporterConfig{
+		SlowSpecThreshold: 100 * time.Millisecond,
+	})
 }
+
+const DivisorDBPath = "testDivisorDB.sqlite"
 
 var _ = AfterEach(func() {
 	os.Remove(DivisorDBPath)
@@ -25,28 +29,28 @@ var _ = AfterEach(func() {
 
 var _ = Describe("Parametrized Database Tests", func() {
 
-	DescribeTable("is initially empty", func(inputDb riemann.DivisorDb) {
-		db := setupDivisorDB(inputDb)
+	DescribeTable("is initially empty", func(inputDb divisordb.DivisorDb) {
+		db := divisordb.SetupDivisorDB(inputDb, DivisorDBPath)
 		loadedData := db.Load()
 		Expect(len(loadedData)).To(Equal(0))
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		Entry("SQLite", &divisordb.SqliteDivisorDb{DBPath: DivisorDBPath}),
+		Entry("In-Memory", &divisordb.InMemoryDivisorDb{}),
 	)
 
-	DescribeTable("Multiple initializations should be Idempotent", func(inputDb riemann.DivisorDb) {
-		db := setupDivisorDB(inputDb)
+	DescribeTable("Multiple initializations should be Idempotent", func(inputDb divisordb.DivisorDb) {
+		db := divisordb.SetupDivisorDB(inputDb, DivisorDBPath)
 		db.Initialize()
 		db.Initialize()
 		Expect(true)
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		Entry("SQLite", &divisordb.SqliteDivisorDb{DBPath: DivisorDBPath}),
+		Entry("In-Memory", &divisordb.InMemoryDivisorDb{}),
 	)
 
-	DescribeTable("Upserts correctly", func(inputDb riemann.DivisorDb) {
-		db := setupDivisorDB(inputDb)
+	DescribeTable("Upserts correctly", func(inputDb divisordb.DivisorDb) {
+		db := divisordb.SetupDivisorDB(inputDb, DivisorDBPath)
 		records := []riemann.RiemannDivisorSum{
 			{N: *big.NewInt(1), DivisorSum: *big.NewInt(1), WitnessValue: 1},
 			{N: *big.NewInt(2), DivisorSum: *big.NewInt(2), WitnessValue: 2},
@@ -93,12 +97,12 @@ var _ = Describe("Parametrized Database Tests", func() {
 		})
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		Entry("SQLite", &divisordb.SqliteDivisorDb{DBPath: DivisorDBPath}),
+		Entry("In-Memory", &divisordb.InMemoryDivisorDb{}),
 	)
 
-	DescribeTable("Summarizes", func(inputDb riemann.DivisorDb) {
-		db := setupDivisorDB(inputDb)
+	DescribeTable("Summarizes", func(inputDb divisordb.DivisorDb) {
+		db := divisordb.SetupDivisorDB(inputDb, DivisorDBPath)
 		By("correctly summarizing empty data", func() {
 			summaryData := db.Summarize()
 			expectedSummaryData := riemann.SummaryStats{
@@ -124,12 +128,12 @@ var _ = Describe("Parametrized Database Tests", func() {
 		})
 
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		Entry("SQLite", &divisordb.SqliteDivisorDb{DBPath: DivisorDBPath}),
+		Entry("In-Memory", &divisordb.InMemoryDivisorDb{}),
 	)
 
-	DescribeTable("Summarizes for float values", func(inputDb riemann.DivisorDb) {
-		db := setupDivisorDB(inputDb)
+	DescribeTable("Summarizes for float values", func(inputDb divisordb.DivisorDb) {
+		db := divisordb.SetupDivisorDB(inputDb, DivisorDBPath)
 		By("correctly summarizing non-empty data", func() {
 			records := []riemann.RiemannDivisorSum{
 				{N: *big.NewInt(10092), DivisorSum: *big.NewInt(24388), WitnessValue: 1.088},
@@ -144,19 +148,19 @@ var _ = Describe("Parametrized Database Tests", func() {
 			Expect(summaryData).To(Equal(expectedSummaryData))
 		})
 	},
-		Entry("SQLite", &riemann.SqliteDivisorDb{DBPath: DivisorDBPath}),
-		Entry("In-Memory", &riemann.InMemoryDivisorDb{}),
+		Entry("SQLite", &divisordb.SqliteDivisorDb{DBPath: DivisorDBPath}),
+		Entry("In-Memory", &divisordb.InMemoryDivisorDb{}),
 	)
 
 	Describe("Represents Bigint Correctly in DB", func() {
 		It("should work correctly", func() {
-			actualOutput := riemann.GetStableTextRepresentationOfBigInt(*big.NewInt(1), 10)
+			actualOutput := divisordb.GetStableTextRepresentationOfBigInt(*big.NewInt(1), 10)
 			expectedOutput := "0000000001"
 			Expect(actualOutput).To(Equal(expectedOutput))
 		})
 
 		It("should fail in large cases correctly", func() {
-			Expect(func() { riemann.GetStableTextRepresentationOfBigInt(*big.NewInt(100), 2) }).To(PanicWith("number is bigger than can be represented by string"))
+			Expect(func() { divisordb.GetStableTextRepresentationOfBigInt(*big.NewInt(100), 2) }).To(PanicWith("number is bigger than can be represented by string"))
 		})
 
 	})

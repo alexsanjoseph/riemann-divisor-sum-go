@@ -1,9 +1,11 @@
-package riemann
+package search
 
 import (
 	"errors"
 	"fmt"
 	"math"
+
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 )
 
 func WitnessValue(n int64, pds int64) float64 {
@@ -11,7 +13,7 @@ func WitnessValue(n int64, pds int64) float64 {
 	var divSum int64
 	var err error
 	if pds < 0 {
-		divSum, err = DivisorSum(n)
+		divSum, err = riemann.DivisorSum(n)
 	} else {
 		divSum, err = pds, nil
 	}

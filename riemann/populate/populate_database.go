@@ -1,18 +1,22 @@
-package riemann
+package populate
 
 import (
 	"fmt"
 	"time"
+
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisordb"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/search"
 )
 
-func PopulateDB(db DivisorDb, sdb SearchStateDB, stateType string, batchSize int64, batches int64, minWitnessValue float64) {
+func PopulateDB(db divisordb.DivisorDb, sdb search.SearchStateDB, stateType string, batchSize int64, batches int64, minWitnessValue float64) {
 
 	latestSearchState := sdb.LatestSearchState(stateType)
 	nextBatch := latestSearchState.GetNextBatch(batchSize)
 
 	for i := 0; batches == -1 || i < int(batches); i++ {
 		time1 := time.Now()
-		candidateResults := []RiemannDivisorSum{}
+		candidateResults := []riemann.RiemannDivisorSum{}
 
 		for _, candidate := range nextBatch {
 			candidateResult := candidate.ComputeRiemannDivisorSum()
@@ -28,13 +32,14 @@ func PopulateDB(db DivisorDb, sdb SearchStateDB, stateType string, batchSize int
 
 		time2 := time.Now()
 
-		singleBatchMetadata := SearchMetadata{
-			startTime:     time1,
-			endTime:       time2,
-			stateType:     stateType,
-			startingState: nextBatch[0],
-			endingState:   endingState,
-		}
+		singleBatchMetadata := search.SearchMetadata{}
+		singleBatchMetadata.Initialize(
+			stateType,
+			nextBatch[0],
+			endingState,
+			time1,
+			time2,
+		)
 
 		sdb.InsertSearchMetadata(singleBatchMetadata)
 		fmt.Printf("Inserted Metadata in %s\n", time.Since(time2))

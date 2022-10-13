@@ -1,4 +1,4 @@
-package riemann_test
+package search_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"math/big"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/search"
 	"github.com/dustin/go-humanize"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -15,26 +16,26 @@ import (
 var _ = Describe("CounterExample Search", func() {
 
 	It("should return witness value", func() {
-		output := riemann.WitnessValue(10080, -1)
+		output := search.WitnessValue(10080, -1)
 		Expect(math.Abs(output-1.755814) < 1e-5).To(BeTrue())
 	})
 
 	It("should return witness value if precomputed sum is provided", func() {
-		output := riemann.WitnessValue(10080, 1)
+		output := search.WitnessValue(10080, 1)
 		Expect(math.Abs(output-(1/22389.61097)) < 1e-5).To(BeTrue())
 	})
 
 	It("should fail if no witnesses", func() {
-		_, err := riemann.Search(6000, 5041)
+		_, err := search.Search(6000, 5041)
 		Expect(err).To(HaveOccurred())
 	})
 
 	It("should panic if asked to find witnesses for cases where DivisorSum cannot be found", func() {
-		Expect(func() { riemann.WitnessValue(-1, -1) }).To(PanicWith("Error calculating DivisorSum for -1"))
+		Expect(func() { search.WitnessValue(-1, -1) }).To(PanicWith("Error calculating DivisorSum for -1"))
 	})
 
 	It("should search successfully", func() {
-		output, err := riemann.Search(10000, 5040)
+		output, err := search.Search(10000, 5040)
 		if err != nil {
 			Fail("error should be nil")
 		}
@@ -44,7 +45,7 @@ var _ = Describe("CounterExample Search", func() {
 	It("should find best witness successfully", func() {
 		count_till := int64(100_000)
 
-		output, witnessVal := riemann.BestWitness(count_till, 11000)
+		output, witnessVal := search.BestWitness(count_till, 11000)
 		fmt.Println("\nCurrent Best till", humanize.Comma(int64(count_till)), "is", output, "at value", witnessVal)
 
 		Expect(output).To(Equal(int64(55440)))
@@ -58,9 +59,9 @@ var _ = Describe("CounterExample Search", func() {
 		}
 
 		actualOutput := []riemann.RiemannDivisorSum{
-			riemann.NewExhaustiveSearchState(10080).ComputeRiemannDivisorSum(),
-			riemann.NewExhaustiveSearchState(10081).ComputeRiemannDivisorSum(),
-			riemann.NewExhaustiveSearchState(10082).ComputeRiemannDivisorSum(),
+			search.NewExhaustiveSearchState(10080).ComputeRiemannDivisorSum(),
+			search.NewExhaustiveSearchState(10081).ComputeRiemannDivisorSum(),
+			search.NewExhaustiveSearchState(10082).ComputeRiemannDivisorSum(),
 		}
 		Expect(len(actualOutput)).To(Equal(len(expectedOutput)))
 		for key, value := range actualOutput {

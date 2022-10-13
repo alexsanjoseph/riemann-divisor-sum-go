@@ -1,4 +1,4 @@
-package riemann
+package search
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 )
 
 func InitialSearchState(stateType string) SearchState {
@@ -74,14 +76,14 @@ func (ess *ExhaustiveSearchState) GetNextBatch(batchSize int64) []SearchState {
 	return output
 }
 
-func (ess *ExhaustiveSearchState) ComputeRiemannDivisorSum() RiemannDivisorSum {
+func (ess *ExhaustiveSearchState) ComputeRiemannDivisorSum() riemann.RiemannDivisorSum {
 	i := ess.n
-	ds, err := DivisorSum(i)
+	ds, err := riemann.DivisorSum(i)
 	if err != nil {
 		panic("Divisor Sum cannot be found")
 	}
 	wv := WitnessValue(i, ds)
-	return RiemannDivisorSum{N: *big.NewInt(i), WitnessValue: wv, DivisorSum: *big.NewInt(ds)}
+	return riemann.RiemannDivisorSum{N: *big.NewInt(i), WitnessValue: wv, DivisorSum: *big.NewInt(ds)}
 }
 
 //===================================================
@@ -113,7 +115,7 @@ func (sass *SuperabundantSearchState) GetNextBatch(batchSize int64) []SearchStat
 	currentLevel := sass.level
 	currentIndexInLevel := sass.indexInLevel + 1
 	for len(output) <= int(batchSize) {
-		partitions := MemoizedPartitionsOfN(int(currentLevel))
+		partitions := riemann.MemoizedPartitionsOfN(int(currentLevel))
 
 		if currentIndexInLevel > int64(len(partitions)) {
 			panic("index level is illegal")
@@ -139,15 +141,15 @@ func FindNFromPrimeFactors(PrimeFactors [][]int64) big.Int {
 	return n
 }
 
-func (sass *SuperabundantSearchState) ComputeRiemannDivisorSum() RiemannDivisorSum {
+func (sass *SuperabundantSearchState) ComputeRiemannDivisorSum() riemann.RiemannDivisorSum {
 
 	primeFactors := [][]int64{}
-	primes := FirstNPrimes(len(sass.value))
+	primes := riemann.FirstNPrimes(len(sass.value))
 	for i, x := range sass.value {
 		primeFactors = append(primeFactors, []int64{int64(primes[i]), int64(x)})
 	}
 
-	divSum, err := PrimeFactorDivisorSum(primeFactors)
+	divSum, err := riemann.PrimeFactorDivisorSum(primeFactors)
 	if err != nil {
 		panic("Divisor Sum cannot be found")
 	}
@@ -163,5 +165,5 @@ func (sass *SuperabundantSearchState) ComputeRiemannDivisorSum() RiemannDivisorS
 	// fmt.Println("Level:", sass.level, ", Index:", sass.indexInLevel)
 	// fmt.Println("N:", n, ", WV:", wv)
 
-	return RiemannDivisorSum{N: n, WitnessValue: wv, DivisorSum: divSum} // TODO: hack!
+	return riemann.RiemannDivisorSum{N: n, WitnessValue: wv, DivisorSum: divSum} // TODO: hack!
 }

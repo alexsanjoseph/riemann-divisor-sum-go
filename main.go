@@ -7,7 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/divisordb"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/populate"
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann/search"
 )
 
 var (
@@ -17,7 +19,7 @@ var (
 	minWitnessValue = flag.Float64("minWitnessValue", 1.75, "minimum Witness Value to persist")
 )
 
-func handleClose(db riemann.DivisorDb) {
+func handleClose(db divisordb.DivisorDb) {
 	fmt.Println("Got Interrupt. Shutting down...")
 	summarizeOutput := db.Summarize()
 	fmt.Println("\nHighest Number Analyzed\n======")
@@ -35,8 +37,8 @@ func main() {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
 
-	sqlDB := riemann.SqliteDivisorDb{DBPath: "divisorDb.sqlite"}
-	var ddb = riemann.DivisorDb(&sqlDB)
+	sqlDB := divisordb.SqliteDivisorDb{DBPath: "divisorDb.sqlite"}
+	var ddb = divisordb.DivisorDb(&sqlDB)
 
 	// imDB := riemann.InMemoryDivisorDb{}
 	// var ddb = riemann.DivisorDb(&imDB)
@@ -44,8 +46,8 @@ func main() {
 	ddb.Initialize()
 	defer ddb.Close()
 
-	sqlsdb := riemann.SqliteSearchDb{DBPath: "searchDb.sqlite"}
-	ssdb := riemann.SearchStateDB(&sqlsdb)
+	sqlsdb := search.SqliteSearchDb{DBPath: "searchDb.sqlite"}
+	ssdb := search.SearchStateDB(&sqlsdb)
 
 	// imsdb := riemann.InMemorySearchDb{}
 	// ssdb := riemann.SearchStateDB(&imsdb)
@@ -53,7 +55,7 @@ func main() {
 	ssdb.Initialize()
 	defer ssdb.Close()
 
-	go riemann.PopulateDB(ddb, ssdb, *stateType, *batchSize, *totalBatches, *minWitnessValue)
+	go populate.PopulateDB(ddb, ssdb, *stateType, *batchSize, *totalBatches, *minWitnessValue)
 	<-sigCh
 	handleClose(ddb)
 }

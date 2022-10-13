@@ -1,4 +1,4 @@
-package riemann
+package divisordb
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 
+	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -36,7 +37,7 @@ func (sqdb *SqliteDivisorDb) Initialize() {
 	}
 }
 
-func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
+func (sqdb SqliteDivisorDb) Load() []riemann.RiemannDivisorSum {
 	sqlStmt := `
             SELECT n, divisor_sum, witness_value
             FROM RiemannDivisorSums
@@ -47,7 +48,7 @@ func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
 		panic(err)
 	}
 	defer rows.Close()
-	output := []RiemannDivisorSum{}
+	output := []riemann.RiemannDivisorSum{}
 	for rows.Next() {
 		var n, divisorSum string
 		var witnessValue float64
@@ -65,7 +66,7 @@ func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
 			log.Fatal("unable to parse divisor sum")
 		}
 
-		output = append(output, RiemannDivisorSum{
+		output = append(output, riemann.RiemannDivisorSum{
 			N:            *N,
 			DivisorSum:   *DivisorSum,
 			WitnessValue: witnessValue,
@@ -86,7 +87,7 @@ func GetStableTextRepresentationOfBigInt(N big.Int, fixedLength int) string {
 	return NString
 }
 
-func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
+func (sqdb SqliteDivisorDb) Upsert(rds []riemann.RiemannDivisorSum) {
 
 	tx, err := sqdb.db.Begin()
 	if err != nil {
@@ -118,7 +119,7 @@ func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
 	tx.Commit()
 }
 
-func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
+func (sqdb SqliteDivisorDb) Summarize() riemann.SummaryStats {
 
 	largestNStms := `
 	SELECT *
@@ -131,9 +132,9 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 	var witnessValue float64
 	err := row.Scan(&n, &divisorSum, &witnessValue)
 	if err != nil {
-		return SummaryStats{
-			LargestWitnessValue: RiemannDivisorSum{},
-			LargestComputedN:    RiemannDivisorSum{},
+		return riemann.SummaryStats{
+			LargestWitnessValue: riemann.RiemannDivisorSum{},
+			LargestComputedN:    riemann.RiemannDivisorSum{},
 		}
 	}
 
@@ -147,7 +148,7 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 		log.Fatal("unable to parse divisor sum")
 	}
 
-	largest_computed_n := RiemannDivisorSum{
+	largest_computed_n := riemann.RiemannDivisorSum{
 		N:            *N,
 		DivisorSum:   *DivisorSum,
 		WitnessValue: witnessValue,
@@ -174,13 +175,13 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 		log.Fatal("unable to parse divisor sum")
 	}
 
-	largest_witness_value := RiemannDivisorSum{
+	largest_witness_value := riemann.RiemannDivisorSum{
 		N:            *N,
 		DivisorSum:   *DivisorSum,
 		WitnessValue: witnessValue,
 	}
 
-	return SummaryStats{
+	return riemann.SummaryStats{
 		LargestWitnessValue: largest_witness_value,
 		LargestComputedN:    largest_computed_n,
 	}

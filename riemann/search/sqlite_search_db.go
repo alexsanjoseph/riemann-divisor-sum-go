@@ -1,4 +1,4 @@
-package riemann
+package search
 
 import (
 	"database/sql"

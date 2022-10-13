@@ -16,14 +16,6 @@ type SummaryStats struct {
 	LargestWitnessValue RiemannDivisorSum
 }
 
-type DivisorDb interface {
-	Initialize()
-	Load() []RiemannDivisorSum
-	Upsert([]RiemannDivisorSum)
-	Summarize() SummaryStats
-	Close()
-}
-
 func (rds *RiemannDivisorSum) Print() string {
 	return fmt.Sprintf(
 		"Number: %s, DivisorSum: %s, WitnessValue %f\n",
