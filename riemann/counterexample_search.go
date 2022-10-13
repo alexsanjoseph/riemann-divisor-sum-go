@@ -44,16 +44,29 @@ func BestWitness(maxRange, searchStart int64) (int64, float64) {
 	return bestWitness, maxVal
 }
 
-func ComputerRiemannDivisorSums(startingN, endingN int64) []RiemannDivisorSum {
-	output := []RiemannDivisorSum{}
+// func ComputerRiemannDivisorSums(startingN, endingN int64) []RiemannDivisorSum {
+// 	output := []RiemannDivisorSum{}
 
-	for i := startingN; i <= endingN; i++ {
-		ds, err := DivisorSum(i)
-		if err != nil {
-			panic("Divisor Sum cannot be found")
-		}
-		wv := WitnessValue(i, ds)
-		output = append(output, RiemannDivisorSum{N: i, WitnessValue: wv, DivisorSum: ds})
-	}
-	return output
-}
+// 	for i := startingN; i <= endingN; i++ {
+// 		ds, err := DivisorSum(i)
+// 		if err != nil {
+// 			panic("Divisor Sum cannot be found")
+// 		}
+// 		wv := WitnessValue(i, ds)
+// 		output = append(output, RiemannDivisorSum{N: i, WitnessValue: wv, DivisorSum: ds})
+// 	}
+// 	return output
+// }
+
+// func ComputeRiemannDivisorSum(ss SearchState) RiemannDivisorSum {
+// 	i, err := strconv.Atoi(ss.Value())
+// 	if err != nil {
+// 		panic("Couldn't convert to int")
+// 	}
+// 	ds, err := DivisorSum(int64(i))
+// 	if err != nil {
+// 		panic("Divisor Sum cannot be found")
+// 	}
+// 	wv := WitnessValue(int64(i), ds)
+// 	return RiemannDivisorSum{N: int64(i), WitnessValue: wv, DivisorSum: ds}
+// }

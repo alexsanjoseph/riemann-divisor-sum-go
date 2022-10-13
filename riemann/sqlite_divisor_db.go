@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/big"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -23,8 +24,8 @@ func (sqdb *SqliteDivisorDb) Initialize() {
 
 	sqlStmt := `
 	CREATE TABLE RiemannDivisorSums (
-            n UNSIGNED BIG INT CONSTRAINT divisor_sum_pk PRIMARY KEY,
-            divisor_sum UNSIGNED BIG INT,
+            n TEXT CONSTRAINT divisor_sum_pk PRIMARY KEY,
+            divisor_sum TEXT,
             witness_value REAL
 	);
 	`
@@ -48,19 +49,41 @@ func (sqdb SqliteDivisorDb) Load() []RiemannDivisorSum {
 	defer rows.Close()
 	output := []RiemannDivisorSum{}
 	for rows.Next() {
-		var n, divisorSum int64
+		var n, divisorSum string
 		var witnessValue float64
 		err = rows.Scan(&n, &divisorSum, &witnessValue)
 		if err != nil {
 			log.Fatal(err)
 		}
+		N, ok := new(big.Int).SetString(n, 10)
+		if !ok {
+			log.Fatal("unable to parse N")
+		}
+
+		DivisorSum, ok := new(big.Int).SetString(n, 10)
+		if !ok {
+			log.Fatal("unable to parse divisor sum")
+		}
+
 		output = append(output, RiemannDivisorSum{
-			N:            n,
-			DivisorSum:   divisorSum,
+			N:            *N,
+			DivisorSum:   *DivisorSum,
 			WitnessValue: witnessValue,
 		})
 	}
 	return output
+}
+
+func GetStableTextRepresentationOfBigInt(N big.Int, fixedLength int) string {
+	NString := N.String()
+	paddingRequired := fixedLength - len(NString) // No Need to worry about weird characters
+	if paddingRequired < 0 {
+		panic("number is bigger than can be represented by string")
+	}
+	for i := 0; i < paddingRequired; i++ {
+		NString = "0" + NString
+	}
+	return NString
 }
 
 func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
@@ -84,8 +107,8 @@ func (sqdb SqliteDivisorDb) Upsert(rds []RiemannDivisorSum) {
 	defer sqlStmt.Close()
 	for _, value := range rds {
 		_, err := sqlStmt.Exec(
-			fmt.Sprintf("%d", value.N),
-			fmt.Sprintf("%d", value.DivisorSum),
+			GetStableTextRepresentationOfBigInt(value.N, 200),
+			GetStableTextRepresentationOfBigInt(value.DivisorSum, 200),
 			fmt.Sprintf("%f", value.WitnessValue),
 		)
 		if err != nil {
@@ -104,7 +127,7 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 	LIMIT 1;
 	`
 	row := sqdb.db.QueryRow(largestNStms)
-	var n, divisorSum int64
+	var n, divisorSum string
 	var witnessValue float64
 	err := row.Scan(&n, &divisorSum, &witnessValue)
 	if err != nil {
@@ -114,9 +137,19 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 		}
 	}
 
+	N, ok := new(big.Int).SetString(n, 10)
+	if !ok {
+		log.Fatal("unable to parse N")
+	}
+
+	DivisorSum, ok := new(big.Int).SetString(divisorSum, 10)
+	if !ok {
+		log.Fatal("unable to parse divisor sum")
+	}
+
 	largest_computed_n := RiemannDivisorSum{
-		N:            n,
-		DivisorSum:   divisorSum,
+		N:            *N,
+		DivisorSum:   *DivisorSum,
 		WitnessValue: witnessValue,
 	}
 
@@ -131,9 +164,19 @@ func (sqdb SqliteDivisorDb) Summarize() SummaryStats {
 	if err != nil {
 		panic(err)
 	}
+	N, ok = new(big.Int).SetString(n, 10)
+	if !ok {
+		log.Fatal("unable to parse N")
+	}
+
+	DivisorSum, ok = new(big.Int).SetString(divisorSum, 10)
+	if !ok {
+		log.Fatal("unable to parse divisor sum")
+	}
+
 	largest_witness_value := RiemannDivisorSum{
-		N:            n,
-		DivisorSum:   divisorSum,
+		N:            *N,
+		DivisorSum:   *DivisorSum,
 		WitnessValue: witnessValue,
 	}
 
