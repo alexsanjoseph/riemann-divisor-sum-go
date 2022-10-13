@@ -1,12 +1,20 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/alexsanjoseph/riemann-divisor-sum-go/riemann"
+)
+
+var (
+	batchSize       = flag.Int64("batchSize", 1000000, "size per batch")
+	stateType       = flag.String("stateType", "superabundant", "file-name")
+	totalBatches    = flag.Int64("totalBatches", -1, "number of batches to calculate (-1) = Inf")
+	minWitnessValue = flag.Float64("minWitnessValue", 1.75, "minimum Witness Value to persist")
 )
 
 func handleClose(db riemann.DivisorDb) {
@@ -22,7 +30,8 @@ func handleClose(db riemann.DivisorDb) {
 
 func main() {
 
-	stateType := "superabundant"
+	flag.Parse()
+
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT)
 
@@ -44,7 +53,7 @@ func main() {
 	ssdb.Initialize()
 	defer ssdb.Close()
 
-	go riemann.PopulateDB(ddb, ssdb, stateType, 100000, -1, 1.75)
+	go riemann.PopulateDB(ddb, ssdb, *stateType, *batchSize, *totalBatches, *minWitnessValue)
 	<-sigCh
 	handleClose(ddb)
 }
